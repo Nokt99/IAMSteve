@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>I AM STEVE – Billion Chaos</title>
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    #container {
+      display: grid;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 42px;
+      font-weight: bold;
+      text-shadow: 0 0 10px black;
+      z-index: 9999;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="counter">COMPUTER SANITY: 1000000000</div>
+
+  <!-- Your clipped I AM STEVE video (iamsteve.mp4 in same folder as this file) -->
+  <video id="source" src="iamsteve.mp4"></video>
+
+  <div id="container"></div>
+
+  <script>
+    // --- CONFIG ---
+    const START = 0.0;
+    const END = 3.9; // cut before meme part
+    const TARGET = 1_000_000_000; // one billion
+
+    // --- ELEMENTS ---
+    const container = document.getElementById("container");
+    const source = document.getElementById("source");
+    const counter = document.getElementById("counter");
+
+    source.style.display = "none";
+    source.currentTime = START;
+
+    let clips = [];
+    let sanity = TARGET;
+
+    // --- ADD A SINGLE VIDEO CLIP ---
+    function addClip() {
+      const v = source.cloneNode(true);
+      v.currentTime = START;
+      v.play();
+
+      // Loop ONLY the I AM STEVE part
+      v.addEventListener("timeupdate", () => {
+        if (v.currentTime >= END) {
+          v.currentTime = START;
+        }
+      });
+
+      container.appendChild(v);
+      clips.push(v);
+    }
+
+    // --- UPDATE SANITY COUNTER ---
+    function updateSanity(videoCount) {
+      // natural exponential drain based on video count
+      let naturalDrain = Math.max(1, Math.floor(Math.log2(videoCount)));
+
+      // if next doubling will hit or exceed 1B, force exact sync
+      if (videoCount * 2 >= TARGET) {
+        naturalDrain = sanity; // drain exactly what's left
+      }
+
+      sanity -= naturalDrain;
+      if (sanity < 0) sanity = 0;
+
+      counter.innerText = "COMPUTER SANITY: " + Math.floor(sanity);
+    }
+
+    // --- MULTIPLY VIDEOS ---
+    function multiply() {
+      const count = clips.length;
+
+      // Stop if we already reached or passed 1 billion videos
+      if (count >= TARGET) {
+        console.log("Reached 1 billion videos. Stopping.");
+        return;
+      }
+
+      // Update sanity BEFORE doubling
+      updateSanity(count);
+
+      // If sanity hit 0, stop everything
+      if (sanity <= 0) {
+        console.log("Sanity reached zero. Perfect sync achieved.");
+        return;
+      }
+
+      // Duplicate current clips
+      for (let i = 0; i < count; i++) {
+        addClip();
+      }
+
+      // Update grid layout
+      const n = Math.ceil(Math.sqrt(clips.length));
+      container.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      container.style.gridTemplateRows = `repeat(${n}, 1fr)`;
+
+      console.log("Videos:", clips.length, "Sanity:", sanity);
+    }
+
+    // --- START ---
+    addClip();                 // start with 1 video
+    setInterval(multiply, 1000); // double every second
+  </script>
+
+</body>
+</html>
