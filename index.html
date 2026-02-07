@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>I AM STEVE – Pure Chaos</title>
+  <title>I AM STEVE – Chaos</title>
   <style>
     html, body {
       margin: 0;
@@ -26,14 +26,13 @@
 </head>
 <body>
 
-  <!-- Source video: must be in same folder as this file -->
-  <video id="source" src="iamsteve.mp4"></video>
+  <video id="source" src="iamsteve.mp4" playsinline></video>
   <div id="container"></div>
 
   <script>
     const START = 0.0;
-    const END = 3.9; // end of "I AM STEVE" part
-    const TARGET = 1_000_000_000; // conceptual target
+    const END = 3.9;
+    const TARGET = 1_000_000_000;
 
     const container = document.getElementById("container");
     const source = document.getElementById("source");
@@ -45,7 +44,6 @@
     function addClip() {
       const v = source.cloneNode(true);
       v.currentTime = START;
-      v.play();
 
       v.addEventListener("timeupdate", () => {
         if (v.currentTime >= END) {
@@ -61,7 +59,6 @@
       const count = clips.length;
 
       if (count >= TARGET) {
-        console.log("Conceptually reached 1 billion videos. Stopping.");
         return;
       }
 
@@ -72,13 +69,19 @@
       const n = Math.ceil(Math.sqrt(clips.length));
       container.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
       container.style.gridTemplateRows = `repeat(${n}, 1fr)`;
-
-      console.log("Videos:", clips.length);
     }
 
-    // Start with one video, then double every second
+    // Start with one video
     addClip();
+
+    // Multiply every second
     setInterval(multiply, 1000);
+
+    // 🔥 THIS MAKES THE VIDEOS APPEAR
+    document.body.addEventListener("click", () => {
+      source.play();
+      clips.forEach(v => v.play());
+    });
   </script>
 
 </body>
