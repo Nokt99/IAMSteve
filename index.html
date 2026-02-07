@@ -27,8 +27,8 @@
 </head>
 <body>
 
-  <!-- Hidden master video -->
-  <video id="source" src="iamsteve.mp4" playsinline></video>
+  <!-- MASTER VIDEO: MUST AUTOPLAY MUTED -->
+  <video id="source" src="iamsteve.mp4" playsinline autoplay muted></video>
 
   <div id="container"></div>
 
@@ -40,7 +40,6 @@
     const container = document.getElementById("container");
     const source = document.getElementById("source");
 
-    // Hide the master video
     source.style.display = "none";
     source.currentTime = START;
 
@@ -48,6 +47,11 @@
 
     function addClip() {
       const v = source.cloneNode(true);
+
+      // MUST AUTOPLAY MUTED TO RENDER A FRAME
+      v.autoplay = true;
+      v.muted = true;
+
       v.currentTime = START;
 
       v.addEventListener("timeupdate", () => {
@@ -74,13 +78,13 @@
       container.style.gridTemplateRows = `repeat(${n}, 1fr)`;
     }
 
-    // Start with one video
+    // Start with one visible video
     addClip();
 
     // Multiply every second
     setInterval(multiply, 1000);
 
-    // 🔥 AUDIO + VIDEO UNLOCK — THIS IS THE IMPORTANT PART
+    // 🔥 UNLOCK AUDIO AFTER CLICK
     document.addEventListener("click", () => {
       source.muted = false;
       source.play().catch(() => {});
